@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+</head>
+<body>
+    <a href="{% url 'blog:post_list' %}">&laquo; Back to all posts</a>
+
+    <h1>{{ post.title }}</h1>
+    <p><em>{{ post.category }} — {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</em></p>
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}" width="500">
+    {% endif %}
+
+    <p>{{ post.content }}</p>
+
+    <hr>
+    <h3>Comments ({{ comments.count }})</h3>
+    {% for comment in comments %}
+        <p><strong>{{ comment.name }}</strong> — {{ comment.created_at|date:"F j, Y, g:i a" }}<br>
+        {{ comment.message }}</p>
+    {% empty %}
+        <p>No comments yet. Be the first!</p>
+    {% endfor %}
+
+    <h3>Leave a Comment</h3>
+    <form method="post">
+        {% csrf_token %}
+        <label>Name: <input type="text" name="name" required></label><br>
+        <label>Email: <input type="email" name="email" required></label><br>
+        <label>Message:<br><textarea name="message" rows="4" cols="40" required></textarea></label><br>
+        <input type="submit" value="Post Comment">
+    </form>
+</body>
+</html>
