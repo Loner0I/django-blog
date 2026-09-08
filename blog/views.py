@@ -1,5 +1,6 @@
-from django.shortcuts import render, get_object_or_404, redirect
+﻿from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Category, Comment
+from .forms import CommentForm
 
 
 def post_list(request):
@@ -21,14 +22,20 @@ def post_detail(request, slug):
     comments = post.comments.all()
 
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
-        if name and email and message:
-            Comment.objects.create(post=post, name=name, email=email, message=message)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            Comment.objects.create(
+                post=post,
+                name=form.cleaned_data["name"],
+                email=form.cleaned_data["email"],
+                message=form.cleaned_data["message"],
+            )
             return redirect("blog:post_detail", slug=post.slug)
+    else:
+        form = CommentForm()
 
     return render(request, "blog/post_detail.html", {
         "post": post,
         "comments": comments,
+        "form": form,
     })
