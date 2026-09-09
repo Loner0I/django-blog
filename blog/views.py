@@ -24,12 +24,9 @@ def post_detail(request, slug):
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
-            Comment.objects.create(
-                post=post,
-                name=form.cleaned_data["name"],
-                email=form.cleaned_data["email"],
-                message=form.cleaned_data["message"],
-            )
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
             return redirect("blog:post_detail", slug=post.slug)
     else:
         form = CommentForm()
