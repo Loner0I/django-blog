@@ -1,0 +1,38 @@
+﻿{% extends "blog/base.html" %}
+
+{% block title %}My Tasks{% endblock %}
+
+{% block content %}
+    <h2>My To-Do List</h2>
+
+    <h3>Add a Task</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Task</button>
+    </form>
+
+    <hr>
+
+    <h3>Tasks</h3>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <form method="post" action="{% url 'todo:task_toggle' task.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %}>
+                </form>
+
+                {% if task.completed %}<s>{% endif %}
+                {{ task.title }}
+                {% if task.due_date %} -- due {{ task.due_date }}{% endif %}
+                {% if task.completed %}</s>{% endif %}
+
+                -- <a href="{% url 'todo:task_edit' task.pk %}">Edit</a>
+                -- <a href="{% url 'todo:task_delete' task.pk %}">Delete</a>
+            </li>
+        {% empty %}
+            <li>No tasks yet. Add one above!</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
